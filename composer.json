@@ -1,0 +1,28 @@
+{
+    "name": "denic/erd",
+    "description": "TYPO3 ERD Generator — backend module and CLI for generating ER diagrams from TCA",
+    "type": "typo3-cms-extension",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "David Denicolo",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "typo3/cms-core": "^11.5",
+        "typo3/cms-backend": "^11.5",
+        "typo3/cms-extbase": "^11.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Denic\\Erd\\": "Classes"
+        }
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "erd"
+        }
+    }
+}
