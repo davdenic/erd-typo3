@@ -1,0 +1,14 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Denic\Erd\:
+    resource: '../Classes/*'
+
+  Denic\Erd\Command\GenerateErdCommand:
+    tags:
+      - name: console.command
+        command: 'erd:generate'
+        description: 'Generate ER diagram from TCA'
