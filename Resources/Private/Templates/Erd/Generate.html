@@ -1,0 +1,100 @@
+<f:layout name="Admin" />
+
+<f:section name="headline">
+    <h1>ERD Generator — Result</h1>
+</f:section>
+
+<f:section name="content">
+    <f:flashMessages />
+
+    <f:if condition="{error}">
+        <div class="alert alert-danger">{error}</div>
+    </f:if>
+
+    <f:if condition="{hasResult}">
+        <f:then>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        Diagram
+                        <f:if condition="{config.extensionKey}">
+                            — {config.extensionKey}
+                        </f:if>
+                        ({f:count(subject: tableSchemas)} tables, depth {config.depth})
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <pre><f:format.htmlspecialchars>{mermaidBlock}</f:format.htmlspecialchars></pre>
+
+                    <div style="margin-top: 15px;">
+                        <f:form action="download" method="post" style="display: inline;">
+                            <f:if condition="{config.extensionKey}">
+                                <f:form.hidden name="extensionKey" value="{config.extensionKey}" />
+                                <f:form.hidden name="mode" value="extension" />
+                            </f:if>
+                            <f:if condition="{config.tables}">
+                                <f:for each="{config.tables}" as="table">
+                                    <input type="hidden" name="tx_erd_web_erderd[tables][]" value="{table}" />
+                                </f:for>
+                                <f:form.hidden name="mode" value="tables" />
+                            </f:if>
+                            <f:form.hidden name="depth" value="{config.depth}" />
+                            <f:form.hidden name="lang" value="{config.lang}" />
+                            <f:form.hidden name="includeInternal" value="{f:if(condition: config.includeInternal, then: '1', else: '0')}" />
+                            <f:form.hidden name="includeCoreTables" value="{f:if(condition: config.includeCoreTables, then: '1', else: '0')}" />
+                            <button type="submit" class="btn btn-success">
+                                Download .md
+                            </button>
+                        </f:form>
+                    </div>
+                </div>
+            </div>
+
+            <f:for each="{tableSchemas}" as="tableSchema">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            {tableSchema.tableName}
+                            <f:if condition="{tableSchema.label} != {tableSchema.tableName}">
+                                <small>({tableSchema.label})</small>
+                            </f:if>
+                        </h3>
+                    </div>
+                    <table class="table table-striped table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Field</th>
+                                <th>Type</th>
+                                <th>Label</th>
+                                <th>Required</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <f:for each="{tableSchema.fields}" as="field">
+                                <tr>
+                                    <td><code>{field.name}</code></td>
+                                    <td>
+                                        {field.type}
+                                        <f:if condition="{field.foreignTable}">
+                                            <span class="text-muted">→ {field.foreignTable}</span>
+                                        </f:if>
+                                    </td>
+                                    <td>{field.label}</td>
+                                    <td>
+                                        <f:if condition="{field.required}">
+                                            <span class="label label-warning">required</span>
+                                        </f:if>
+                                    </td>
+                                </tr>
+                            </f:for>
+                        </tbody>
+                    </table>
+                </div>
+            </f:for>
+        </f:then>
+    </f:if>
+
+    <div style="margin-top: 20px;">
+        <f:link.action action="index" class="btn btn-default">Back to form</f:link.action>
+    </div>
+</f:section>
