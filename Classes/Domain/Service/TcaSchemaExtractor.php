@@ -75,8 +75,30 @@ class TcaSchemaExtractor
     {
         $type = (string)($config['type'] ?? 'input');
 
+        // v12 dedicated types
+        if ($type === 'email') {
+            return 'email';
+        }
+        if ($type === 'link') {
+            return 'link';
+        }
+        if ($type === 'datetime') {
+            return 'datetime';
+        }
+        if ($type === 'number') {
+            return 'number';
+        }
+        if ($type === 'color') {
+            return 'color';
+        }
+        if ($type === 'password') {
+            return 'password';
+        }
         if ($type === 'file') {
             return 'file';
+        }
+        if ($type === 'folder') {
+            return 'folder';
         }
         if ($type === 'category') {
             return 'category';
@@ -218,6 +240,11 @@ class TcaSchemaExtractor
 
         $minitems = (int)($config['minitems'] ?? 0);
         if ($minitems >= 1) {
+            return true;
+        }
+
+        // v12+ required flag
+        if (!empty($config['required'])) {
             return true;
         }
 
