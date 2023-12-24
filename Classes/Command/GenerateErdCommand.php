@@ -16,19 +16,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateErdCommand extends Command
 {
-    protected TcaSchemaExtractor $tcaSchemaExtractor;
-    protected RelationResolver $relationResolver;
-    protected MermaidRenderer $mermaidRenderer;
-
     public function __construct(
-        TcaSchemaExtractor $tcaSchemaExtractor,
-        RelationResolver $relationResolver,
-        MermaidRenderer $mermaidRenderer,
-        ?string $name = null
+        protected readonly TcaSchemaExtractor $tcaSchemaExtractor,
+        protected readonly RelationResolver $relationResolver,
+        protected readonly MermaidRenderer $mermaidRenderer,
+        ?string $name = null,
     ) {
-        $this->tcaSchemaExtractor = $tcaSchemaExtractor;
-        $this->relationResolver = $relationResolver;
-        $this->mermaidRenderer = $mermaidRenderer;
         parent::__construct($name);
     }
 
