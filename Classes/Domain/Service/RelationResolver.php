@@ -9,12 +9,9 @@ use Denic\Erd\Domain\Dto\TableSchema;
 
 class RelationResolver
 {
-    protected TcaSchemaExtractor $tcaSchemaExtractor;
-
-    public function __construct(TcaSchemaExtractor $tcaSchemaExtractor)
-    {
-        $this->tcaSchemaExtractor = $tcaSchemaExtractor;
-    }
+    public function __construct(
+        protected readonly TcaSchemaExtractor $tcaSchemaExtractor,
+    ) {}
 
     /**
      * BFS traversal from root tables, following relations up to $depth levels.

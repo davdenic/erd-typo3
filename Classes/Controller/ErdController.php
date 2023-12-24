@@ -19,19 +19,11 @@ class ErdController extends ActionController
      */
     protected $defaultViewObjectName = BackendTemplateView::class;
 
-    protected TcaSchemaExtractor $tcaSchemaExtractor;
-    protected RelationResolver $relationResolver;
-    protected MermaidRenderer $mermaidRenderer;
-
     public function __construct(
-        TcaSchemaExtractor $tcaSchemaExtractor,
-        RelationResolver $relationResolver,
-        MermaidRenderer $mermaidRenderer
-    ) {
-        $this->tcaSchemaExtractor = $tcaSchemaExtractor;
-        $this->relationResolver = $relationResolver;
-        $this->mermaidRenderer = $mermaidRenderer;
-    }
+        protected readonly TcaSchemaExtractor $tcaSchemaExtractor,
+        protected readonly RelationResolver $relationResolver,
+        protected readonly MermaidRenderer $mermaidRenderer,
+    ) {}
 
     public function indexAction(): void
     {
