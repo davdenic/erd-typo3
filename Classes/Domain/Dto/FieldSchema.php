@@ -13,6 +13,7 @@ class FieldSchema
     protected string $relationKind;
     protected string $foreignTable;
     protected string $mmTable;
+    protected int $populationPercent;
 
     public function __construct(
         string $name,
@@ -21,7 +22,8 @@ class FieldSchema
         bool $required = false,
         string $relationKind = '',
         string $foreignTable = '',
-        string $mmTable = ''
+        string $mmTable = '',
+        int $populationPercent = -1
     ) {
         $this->name = $name;
         $this->type = $type;
@@ -30,6 +32,7 @@ class FieldSchema
         $this->relationKind = $relationKind;
         $this->foreignTable = $foreignTable;
         $this->mmTable = $mmTable;
+        $this->populationPercent = $populationPercent;
     }
 
     public function getName(): string
@@ -65,6 +68,11 @@ class FieldSchema
     public function getMmTable(): string
     {
         return $this->mmTable;
+    }
+
+    public function getPopulationPercent(): int
+    {
+        return $this->populationPercent;
     }
 
     public function isRelation(): bool

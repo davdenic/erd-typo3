@@ -105,6 +105,8 @@ class ErdController extends ActionController
         $lang = $this->getRequestArgument('lang', 'de');
         $includeInternal = (bool)$this->getRequestArgument('includeInternal', '0');
         $includeCoreTables = (bool)$this->getRequestArgument('includeCoreTables', '1');
+        $checkDb = (bool)$this->getRequestArgument('checkDb', '0');
+        $includeEmpty = (bool)$this->getRequestArgument('includeEmpty', '0');
 
         if ($mode === 'extension' && $extensionKey !== '') {
             $config->setExtensionKey($extensionKey);
@@ -116,6 +118,8 @@ class ErdController extends ActionController
         $config->setLang($lang);
         $config->setIncludeInternal($includeInternal);
         $config->setIncludeCoreTables($includeCoreTables);
+        $config->setCheckDb($checkDb);
+        $config->setIncludeEmpty($includeEmpty);
 
         return $config;
     }

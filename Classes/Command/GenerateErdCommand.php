@@ -33,6 +33,8 @@ class GenerateErdCommand extends Command
         $this->addOption('output', 'o', InputOption::VALUE_REQUIRED, 'Output file path (default: stdout)');
         $this->addOption('depth', 'd', InputOption::VALUE_REQUIRED, 'Relationship depth: 0, 1, 2, -1=unlimited', '2');
         $this->addOption('lang', 'l', InputOption::VALUE_REQUIRED, 'Label language', 'de');
+        $this->addOption('check-db', null, InputOption::VALUE_NONE, 'Query DB for population statistics');
+        $this->addOption('include-empty', null, InputOption::VALUE_NONE, 'Include 0%-populated fields (requires --check-db)');
         $this->addOption('include-internal', null, InputOption::VALUE_NONE, 'Include internal TYPO3 fields');
         $this->addOption('no-core-tables', null, InputOption::VALUE_NONE, 'Exclude sys_category, sys_file_reference');
     }
@@ -50,6 +52,8 @@ class GenerateErdCommand extends Command
         $config = new ErdConfiguration();
         $config->setDepth((int)$input->getOption('depth'));
         $config->setLang((string)$input->getOption('lang'));
+        $config->setCheckDb((bool)$input->getOption('check-db'));
+        $config->setIncludeEmpty((bool)$input->getOption('include-empty'));
         $config->setIncludeInternal((bool)$input->getOption('include-internal'));
         $config->setIncludeCoreTables(!$input->getOption('no-core-tables'));
 
