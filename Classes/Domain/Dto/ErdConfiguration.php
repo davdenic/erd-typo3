@@ -12,6 +12,8 @@ class ErdConfiguration
     protected bool $includeInternal = false;
     protected bool $includeCoreTables = true;
     protected string $lang = 'de';
+    protected bool $checkDb = false;
+    protected bool $includeEmpty = false;
 
     public function getTables(): array
     {
@@ -76,6 +78,28 @@ class ErdConfiguration
     public function setLang(string $lang): self
     {
         $this->lang = $lang;
+        return $this;
+    }
+
+    public function isCheckDb(): bool
+    {
+        return $this->checkDb;
+    }
+
+    public function setCheckDb(bool $checkDb): self
+    {
+        $this->checkDb = $checkDb;
+        return $this;
+    }
+
+    public function isIncludeEmpty(): bool
+    {
+        return $this->includeEmpty;
+    }
+
+    public function setIncludeEmpty(bool $includeEmpty): self
+    {
+        $this->includeEmpty = $includeEmpty;
         return $this;
     }
 }

@@ -44,8 +44,11 @@ class MermaidRenderer
             if ($tableSchema->getLabel() !== '' && $tableSchema->getLabel() !== $tableSchema->getTableName()) {
                 $lines[] = '**' . $tableSchema->getLabel() . '**';
             }
+            if ($tableSchema->getRecordCount() >= 0) {
+                $lines[] = 'Records: ' . $tableSchema->getRecordCount();
+            }
             $lines[] = '';
-            $lines[] = $this->renderFieldTable($tableSchema);
+            $lines[] = $this->renderFieldTable($tableSchema, $config);
             $lines[] = '';
         }
 
@@ -98,7 +101,6 @@ class MermaidRenderer
 
         $lines[] = '';
 
-        // Relationships — simple lines for v1 (no cardinality symbols)
         foreach ($tableSchemas as $tableSchema) {
             $sourceEntity = $this->sanitizeEntityName($tableSchema->getTableName());
             foreach ($tableSchema->getRelationFields() as $field) {
@@ -107,19 +109,28 @@ class MermaidRenderer
                     continue;
                 }
                 $targetEntity = $this->sanitizeEntityName($foreignTable);
+                $cardinality = $this->mermaidCardinality($field);
                 $label = $field->getName();
-                $lines[] = '    ' . $sourceEntity . ' ||--|| ' . $targetEntity . ' : "' . $label . '"';
+                $lines[] = '    ' . $sourceEntity . ' ' . $cardinality . ' ' . $targetEntity . ' : "' . $label . '"';
             }
         }
 
         return implode("\n", $lines);
     }
 
-    protected function renderFieldTable(TableSchema $tableSchema): string
+    protected function renderFieldTable(TableSchema $tableSchema, ErdConfiguration $config): string
     {
         $lines = [];
-        $lines[] = '| Field | Type | Label | Required |';
-        $lines[] = '|-------|------|-------|----------|';
+        $hasPopulation = $config->isCheckDb();
+
+        $header = '| Field | Type | Label | Required |';
+        $separator = '|-------|------|-------|----------|';
+        if ($hasPopulation) {
+            $header .= ' Population |';
+            $separator .= '------------|';
+        }
+        $lines[] = $header;
+        $lines[] = $separator;
 
         foreach ($tableSchema->getFields() as $field) {
             $row = '| `' . $field->getName() . '` | ' . $field->getType();
@@ -128,6 +139,10 @@ class MermaidRenderer
             }
             $row .= ' | ' . $this->escapeMarkdown($field->getLabel());
             $row .= ' | ' . ($field->isRequired() ? 'yes' : '') . ' |';
+            if ($hasPopulation) {
+                $pct = $field->getPopulationPercent();
+                $row .= ' ' . ($pct >= 0 ? $pct . '%' : '-') . ' |';
+            }
             $lines[] = $row;
         }
 
@@ -182,6 +197,18 @@ class MermaidRenderer
             'flexform' => 'json',
         ];
         return $map[$type] ?? 'string';
+    }
+
+    protected function mermaidCardinality(FieldSchema $field): string
+    {
+        $map = [
+            'fk' => '||--o|',
+            'mm' => '}o--o{',
+            'category' => '}o--o{',
+            'inline' => '||--o{',
+            'file' => '||--o{',
+        ];
+        return $map[$field->getRelationKind()] ?? '||--o{';
     }
 
     protected function escapeMarkdown(string $text): string
