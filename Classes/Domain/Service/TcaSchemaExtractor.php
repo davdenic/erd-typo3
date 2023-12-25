@@ -7,7 +7,9 @@ namespace Denic\Erd\Domain\Service;
 use Denic\Erd\Domain\Dto\ErdConfiguration;
 use Denic\Erd\Domain\Dto\FieldSchema;
 use Denic\Erd\Domain\Dto\TableSchema;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class TcaSchemaExtractor
 {
@@ -26,11 +28,18 @@ class TcaSchemaExtractor
     {
         $tca = $GLOBALS['TCA'][$tableName] ?? null;
         if ($tca === null) {
-            return new TableSchema($tableName, $tableName, '', []);
+            return new TableSchema($tableName, $tableName, '', [], -1);
         }
 
         $label = $this->resolveLabel($tca['ctrl']['title'] ?? $tableName, $config->getLang());
         $extensionKey = $this->detectExtensionKey($tableName, $tca);
+        $recordCount = $config->isCheckDb() ? $this->getRecordCount($tableName) : -1;
+
+        // Pre-compute population percentages if check-db is on
+        $populationMap = [];
+        if ($config->isCheckDb() && $recordCount > 0) {
+            $populationMap = $this->getFieldPopulation($tableName, array_keys($tca['columns'] ?? []), $recordCount);
+        }
 
         $fields = [];
         foreach ($tca['columns'] ?? [] as $fieldName => $fieldConfig) {
@@ -38,14 +47,24 @@ class TcaSchemaExtractor
                 continue;
             }
 
-            $field = $this->extractField($fieldName, $fieldConfig, $config);
+            $populationPercent = -1;
+            if ($config->isCheckDb()) {
+                $populationPercent = $populationMap[$fieldName] ?? 0;
+            }
+
+            $field = $this->extractField($fieldName, $fieldConfig, $config, $populationPercent);
+
+            if ($config->isCheckDb() && !$config->isIncludeEmpty() && $field->getPopulationPercent() === 0) {
+                continue;
+            }
+
             $fields[$fieldName] = $field;
         }
 
-        return new TableSchema($tableName, $label, $extensionKey, $fields);
+        return new TableSchema($tableName, $label, $extensionKey, $fields, $recordCount);
     }
 
-    protected function extractField(string $fieldName, array $fieldConfig, ErdConfiguration $config): FieldSchema
+    protected function extractField(string $fieldName, array $fieldConfig, ErdConfiguration $config, int $populationPercent = -1): FieldSchema
     {
         $colConfig = $fieldConfig['config'] ?? [];
         $type = $this->resolveFieldType($colConfig);
@@ -67,8 +86,58 @@ class TcaSchemaExtractor
             $required,
             $relationKind,
             $foreignTable,
-            $mmTable
+            $mmTable,
+            $populationPercent
         );
+    }
+
+    /**
+     * Get population percentage for each field in a table.
+     *
+     * @param string[] $fieldNames
+     * @return array<string, int> fieldName => percentage (0-100)
+     */
+    protected function getFieldPopulation(string $tableName, array $fieldNames, int $totalCount): array
+    {
+        $result = [];
+        if ($totalCount <= 0) {
+            return $result;
+        }
+
+        try {
+            $connection = GeneralUtility::makeInstance(ConnectionPool::class)
+                ->getConnectionForTable($tableName);
+
+            // Build a single query with SUM(CASE...) per field
+            $selectParts = [];
+            foreach ($fieldNames as $fieldName) {
+                $quoted = $connection->quoteIdentifier($fieldName);
+                $alias = $connection->quoteIdentifier('pop_' . $fieldName);
+                $selectParts[] = sprintf(
+                    'SUM(CASE WHEN %s IS NOT NULL AND %s != \'\' THEN 1 ELSE 0 END) AS %s',
+                    $quoted,
+                    $quoted,
+                    $alias
+                );
+            }
+
+            $sql = 'SELECT ' . implode(', ', $selectParts) . ' FROM ' . $connection->quoteIdentifier($tableName);
+            $row = $connection->executeQuery($sql)->fetchAssociative();
+
+            if (is_array($row)) {
+                foreach ($fieldNames as $fieldName) {
+                    $key = 'pop_' . $fieldName;
+                    if (isset($row[$key])) {
+                        $populated = (int)$row[$key];
+                        $result[$fieldName] = (int)round(($populated / $totalCount) * 100);
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // If query fails, return empty
+        }
+
+        return $result;
     }
 
     protected function resolveFieldType(array $config): string
@@ -267,14 +336,12 @@ class TcaSchemaExtractor
 
     protected function detectExtensionKey(string $tableName, array $tca): string
     {
-        // Try iconfile path: EXT:my_ext/...
         $iconfile = (string)($tca['ctrl']['iconfile'] ?? '');
         if (strpos($iconfile, 'EXT:') === 0) {
             $parts = explode('/', substr($iconfile, 4), 2);
             return $parts[0] ?? '';
         }
 
-        // Try table prefix: tx_myext_domain_model_*
         if (strpos($tableName, 'tx_') === 0) {
             $parts = explode('_', $tableName);
             if (count($parts) >= 3) {
@@ -286,7 +353,6 @@ class TcaSchemaExtractor
             }
         }
 
-        // Core tables
         if (strpos($tableName, 'sys_') === 0 || strpos($tableName, 'be_') === 0 || $tableName === 'pages' || $tableName === 'tt_content') {
             return 'core';
         }
@@ -326,6 +392,19 @@ class TcaSchemaExtractor
         }
         ksort($extensions);
         return $extensions;
+    }
+
+    protected function getRecordCount(string $tableName): int
+    {
+        try {
+            $connection = GeneralUtility::makeInstance(ConnectionPool::class)
+                ->getConnectionForTable($tableName);
+            $sql = 'SELECT COUNT(*) FROM ' . $connection->quoteIdentifier($tableName);
+            $count = $connection->executeQuery($sql)->fetchOne();
+            return (int)$count;
+        } catch (\Exception $e) {
+            return -1;
+        }
     }
 
     protected function getLanguageService(): ?LanguageService

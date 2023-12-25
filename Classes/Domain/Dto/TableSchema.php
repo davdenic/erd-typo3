@@ -12,6 +12,7 @@ class TableSchema
 
     /** @var array<string, FieldSchema> */
     protected array $fields;
+    protected int $recordCount;
 
     /**
      * @param array<string, FieldSchema> $fields
@@ -20,12 +21,14 @@ class TableSchema
         string $tableName,
         string $label = '',
         string $extensionKey = '',
-        array $fields = []
+        array $fields = [],
+        int $recordCount = -1
     ) {
         $this->tableName = $tableName;
         $this->label = $label;
         $this->extensionKey = $extensionKey;
         $this->fields = $fields;
+        $this->recordCount = $recordCount;
     }
 
     public function getTableName(): string
@@ -49,6 +52,11 @@ class TableSchema
     public function getFields(): array
     {
         return $this->fields;
+    }
+
+    public function getRecordCount(): int
+    {
+        return $this->recordCount;
     }
 
     public function addField(FieldSchema $field): void
