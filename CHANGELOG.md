@@ -1,5 +1,41 @@
 # Changelog
 
+## v2.0.0 — 2023-12-31
+
+Upgrade to TYPO3 12.4 LTS.
+
+### Breaking
+
+- Minimum PHP version raised to 8.2
+- Dropped TYPO3 11.5 support
+- Backend module now uses `Configuration/Backend/Modules.php` (removed `ext_tables.php`)
+
+### Features
+
+- v12 dedicated TCA type resolution (`email`, `link`, `datetime`, `number`, `color`, `password`, `file`, `folder`)
+- v12 `required` field flag support
+- DB population statistics: per-field population percentages via `--check-db`
+- Improved Mermaid cardinality rendering (`||--o|`, `}o--o{`, `||--o{`)
+- Mermaid.js live preview in backend module (CDN)
+
+### Internal
+
+- Constructor promotion with `readonly` throughout
+- Removed manual property assignments
+
+## v1.1.1 — 2023-08-05
+
+- Fix TypeError on passthrough fields without config array
+
+## v1.1.0 — 2023-05-20
+
+- Create output directory recursively if it does not exist
+- Show resolved table count in verbose CLI output
+
+## v1.0.1 — 2023-02-18
+
+- Fix empty extension list when iconfile path is missing
+
 ## v1.0.0 — 2023-01-01
 
 Initial release for TYPO3 11.5.
