@@ -5,8 +5,8 @@ diagrams, Markdown documents, or directly in the TYPO3 backend.
 
 ## Requirements
 
-- TYPO3 11.5 LTS
-- PHP 7.4+
+- TYPO3 12.4 LTS
+- PHP 8.2+
 
 ## Installation
 
@@ -24,6 +24,9 @@ composer require denic/erd
 - **Relation traversal** — follows foreign keys, inline relations, MM tables,
   and categories up to a configurable depth (BFS)
 - **Label resolution** — resolves `LLL:` references to human-readable labels
+- **DB population statistics** — optional per-field population percentages
+  (how many records have a non-empty value)
+- **Mermaid cardinality** — renders proper ER notation (`||--o|`, `}o--o{`, etc.)
 
 ## CLI Usage
 
@@ -37,10 +40,18 @@ vendor/bin/typo3 erd:generate tx_myext_domain_model_event tx_myext_domain_model_
 # Write to file
 vendor/bin/typo3 erd:generate --extension=my_ext --output=docs/erd.md
 
-# Options
+# With DB population check
+vendor/bin/typo3 erd:generate --extension=my_ext --check-db
+
+# Include 0%-populated fields
+vendor/bin/typo3 erd:generate --extension=my_ext --check-db --include-empty
+
+# All options
 vendor/bin/typo3 erd:generate --extension=my_ext \
   --depth=3 \
   --lang=en \
+  --check-db \
+  --include-empty \
   --include-internal \
   --no-core-tables
 ```
@@ -51,9 +62,10 @@ The module is available under **Web → ERD Generator** for admin users.
 
 1. Select mode: by extension or by table(s)
 2. Choose relationship depth (0–3 or unlimited)
-3. Click **Generate ERD**
-4. View the rendered Mermaid diagram and per-table field lists
-5. Download as `.md` file
+3. Optionally enable DB population check
+4. Click **Generate ERD**
+5. View the rendered Mermaid diagram and per-table field lists
+6. Download as `.md` file
 
 ## License
 
