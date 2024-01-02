@@ -8,17 +8,11 @@ use Denic\Erd\Domain\Dto\ErdConfiguration;
 use Denic\Erd\Domain\Service\MermaidRenderer;
 use Denic\Erd\Domain\Service\RelationResolver;
 use Denic\Erd\Domain\Service\TcaSchemaExtractor;
-use TYPO3\CMS\Backend\View\BackendTemplateView;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 class ErdController extends ActionController
 {
-    /**
-     * @var BackendTemplateView
-     */
-    protected $defaultViewObjectName = BackendTemplateView::class;
-
     public function __construct(
         protected readonly TcaSchemaExtractor $tcaSchemaExtractor,
         protected readonly RelationResolver $relationResolver,
