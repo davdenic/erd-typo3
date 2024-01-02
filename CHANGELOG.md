@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.0.1 — 2024-01-02
+
+### Fixes
+
+- Fix fatal error in TYPO3 12: remove `BackendTemplateView` reference
+  (`$defaultViewObjectName`) removed in TYPO3 12 (Breaking #96107,
+  deprecated since v11.5 via #95164)
+
 ## v2.0.0 — 2023-12-31
 
 Upgrade to TYPO3 12.4 LTS.
