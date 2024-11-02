@@ -1,111 +1,108 @@
-<f:layout name="Admin" />
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
 
-<f:section name="headline">
+<f:layout name="Module" />
+<f:section name="Content">
+
     <h1>ERD Generator</h1>
-</f:section>
 
-<f:section name="content">
-    <f:flashMessages />
-
-    <f:form action="generate" objectName="erd" method="post">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Configuration</h3>
-            </div>
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-xs-12 col-md-6">
-                        <div class="form-group">
-                            <label for="mode">Mode</label>
-                            <select name="tx_erd_web_erderd[mode]" id="mode" class="form-control" onchange="document.getElementById('ext-select').style.display = this.value === 'extension' ? 'block' : 'none'; document.getElementById('table-select').style.display = this.value === 'tables' ? 'block' : 'none';">
-                                <option value="extension">By extension</option>
-                                <option value="tables">By table(s)</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group" id="ext-select">
-                            <label for="extensionKey">Extension</label>
-                            <select name="tx_erd_web_erderd[extensionKey]" id="extensionKey" class="form-control">
-                                <option value="">-- Select extension --</option>
-                                <f:for each="{extensionsWithTables}" as="tables" key="extKey">
-                                    <option value="{extKey}">{extKey} ({f:count(subject: tables)} tables)</option>
-                                </f:for>
-                            </select>
-                        </div>
-
-                        <div class="form-group" id="table-select" style="display: none;">
-                            <label for="tables">Tables</label>
-                            <select name="tx_erd_web_erderd[tables][]" id="tables" class="form-control" multiple="multiple" size="12">
-                                <f:for each="{allTables}" as="table">
-                                    <option value="{table}">{table}</option>
-                                </f:for>
-                            </select>
-                            <p class="help-block">Hold Ctrl/Cmd to select multiple tables</p>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 col-md-6">
-                        <div class="form-group">
-                            <label for="depth">Relationship depth</label>
-                            <select name="tx_erd_web_erderd[depth]" id="depth" class="form-control">
-                                <option value="0">0 — selected tables only</option>
-                                <option value="1">1 — direct relations</option>
-                                <option value="2" selected="selected">2 — two hops (default)</option>
-                                <option value="3">3 — three hops</option>
-                                <option value="-1">Unlimited</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="lang">Label language</label>
-                            <select name="tx_erd_web_erderd[lang]" id="lang" class="form-control">
-                                <option value="de" selected="selected">Deutsch</option>
-                                <option value="en">English</option>
-                            </select>
-                        </div>
-
-                        <div class="checkbox">
-                            <label>
-                                <input type="hidden" name="tx_erd_web_erderd[includeInternal]" value="0" />
-                                <input type="checkbox" name="tx_erd_web_erderd[includeInternal]" value="1" />
-                                Include internal TYPO3 fields (uid, pid, hidden, ...)
-                            </label>
-                        </div>
-
-                        <div class="checkbox">
-                            <label>
-                                <input type="hidden" name="tx_erd_web_erderd[includeCoreTables]" value="0" />
-                                <input type="checkbox" name="tx_erd_web_erderd[includeCoreTables]" value="1" checked="checked" />
-                                Include core tables (sys_category, sys_file_reference)
-                            </label>
-                        </div>
-
-                        <div class="checkbox">
-                            <label>
-                                <input type="hidden" name="tx_erd_web_erderd[checkDb]" value="0" />
-                                <input type="checkbox" name="tx_erd_web_erderd[checkDb]" value="1" />
-                                Check DB population
-                            </label>
-                        </div>
-
-                        <div class="checkbox">
-                            <label>
-                                <input type="hidden" name="tx_erd_web_erderd[includeEmpty]" value="0" />
-                                <input type="checkbox" name="tx_erd_web_erderd[includeEmpty]" value="1" />
-                                Include 0%-populated fields (when check DB is on)
-                            </label>
-                        </div>
-                    </div>
+    <f:form action="generate" method="post">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label for="mode">Mode</label>
+                    <f:form.select
+                        name="mode"
+                        id="mode"
+                        options="{extension: 'By extension', tables: 'By table(s)'}"
+                        value="extension"
+                        class="form-select"
+                        additionalAttributes="{onchange: 'document.getElementById(\'ext-select\').style.display = this.value === \'extension\' ? \'block\' : \'none\'; document.getElementById(\'table-select\').style.display = this.value === \'tables\' ? \'block\' : \'none\';'}"
+                    />
                 </div>
 
-                <div class="row">
-                    <div class="col-xs-12">
-                        <button type="submit" class="btn btn-primary">
-                            Generate ERD
-                        </button>
-                    </div>
+                <div class="form-group" id="ext-select">
+                    <label for="extensionKey">Extension</label>
+                    <f:form.select
+                        name="extensionKey"
+                        id="extensionKey"
+                        options="{extensionOptions}"
+                        prependOptionLabel="-- Select extension --"
+                        prependOptionValue=""
+                        class="form-select"
+                    />
+                </div>
+
+                <div class="form-group" id="table-select" style="display: none;">
+                    <label for="tables">Tables</label>
+                    <f:form.select
+                        name="tables"
+                        id="tables"
+                        options="{allTableOptions}"
+                        multiple="1"
+                        size="12"
+                        class="form-select"
+                    />
+                    <div class="form-text">Hold Ctrl/Cmd to select multiple tables</div>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label for="depth">Relationship depth</label>
+                    <f:form.select
+                        name="depth"
+                        id="depth"
+                        options="{0: '0 — selected tables only', 1: '1 — direct relations', 2: '2 — two hops (default)', 3: '3 — three hops', -1: 'Unlimited'}"
+                        value="2"
+                        class="form-select"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="lang">Label language</label>
+                    <f:form.select
+                        name="lang"
+                        id="lang"
+                        options="{de: 'Deutsch', en: 'English'}"
+                        value="de"
+                        class="form-select"
+                    />
+                </div>
+
+                <div class="form-check mt-3">
+                    <f:form.hidden name="includeInternal" value="0" />
+                    <f:form.checkbox name="includeInternal" value="1" id="includeInternal" class="form-check-input" />
+                    <label class="form-check-label" for="includeInternal">Include internal TYPO3 fields (uid, pid, hidden, ...)</label>
+                </div>
+
+                <div class="form-check">
+                    <f:form.hidden name="includeCoreTables" value="0" />
+                    <f:form.checkbox name="includeCoreTables" value="1" checked="1" id="includeCoreTables" class="form-check-input" />
+                    <label class="form-check-label" for="includeCoreTables">Include core tables (sys_category, sys_file_reference)</label>
+                </div>
+
+                <div class="form-check">
+                    <f:form.hidden name="checkDb" value="0" />
+                    <f:form.checkbox name="checkDb" value="1" id="checkDb" class="form-check-input" />
+                    <label class="form-check-label" for="checkDb">Check DB population</label>
+                </div>
+
+                <div class="form-check">
+                    <f:form.hidden name="includeEmpty" value="0" />
+                    <f:form.checkbox name="includeEmpty" value="1" id="includeEmpty" class="form-check-input" />
+                    <label class="form-check-label" for="includeEmpty">Include 0%-populated fields (when check DB is on)</label>
                 </div>
             </div>
         </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">
+                Generate ERD
+            </button>
+        </div>
     </f:form>
+
 </f:section>
+</html>

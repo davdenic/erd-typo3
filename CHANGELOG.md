@@ -1,58 +1,19 @@
 # Changelog
 
-## v2.0.1 — 2024-01-02
+## v2.3.0 — 2024-11-02
 
-### Fixes
-
-- Fix fatal error in TYPO3 12: remove `BackendTemplateView` reference
-  (`$defaultViewObjectName`) removed in TYPO3 12 (Breaking #96107,
-  deprecated since v11.5 via #95164)
+- ModuleTemplateFactory, proper backend styling
+- fix mermaid reserved words (fk, text, etc.)
+- fix empty entity blocks
+- cardinality labels in relations (0:1, 1:n, n:m)
+- copy to clipboard, download .md
 
 ## v2.0.0 — 2023-12-31
 
-Upgrade to TYPO3 12.4 LTS.
-
-### Breaking
-
-- Minimum PHP version raised to 8.2
-- Dropped TYPO3 11.5 support
-- Backend module now uses `Configuration/Backend/Modules.php` (removed `ext_tables.php`)
-
-### Features
-
-- v12 dedicated TCA type resolution (`email`, `link`, `datetime`, `number`, `color`, `password`, `file`, `folder`)
-- v12 `required` field flag support
-- DB population statistics: per-field population percentages via `--check-db`
-- Improved Mermaid cardinality rendering (`||--o|`, `}o--o{`, `||--o{`)
-- Mermaid.js live preview in backend module (CDN)
-
-### Internal
-
-- Constructor promotion with `readonly` throughout
-- Removed manual property assignments
-
-## v1.1.1 — 2023-08-05
-
-- Fix TypeError on passthrough fields without config array
-
-## v1.1.0 — 2023-05-20
-
-- Create output directory recursively if it does not exist
-- Show resolved table count in verbose CLI output
-
-## v1.0.1 — 2023-02-18
-
-- Fix empty extension list when iconfile path is missing
+- upgrade to TYPO3 12.4
+- v12 TCA types, DB population stats
+- PHP 8.2+
 
 ## v1.0.0 — 2023-01-01
 
-Initial release for TYPO3 11.5.
-
-### Features
-
-- TCA schema extractor with field type resolution (v11 `input` + `eval`/`renderType` patterns)
-- Relation resolver with BFS traversal up to configurable depth
-- Mermaid `erDiagram` renderer with Obsidian-compatible Markdown output
-- CLI command `erd:generate` with `--extension`, `--depth`, `--lang`, `--output` options
-- Backend module (Web → ERD Generator) with extension/table selector and download
-- German translations for backend labels
+- initial release for TYPO3 11.5
