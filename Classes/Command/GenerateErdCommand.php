@@ -16,12 +16,19 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateErdCommand extends Command
 {
+    protected TcaSchemaExtractor $tcaSchemaExtractor;
+    protected RelationResolver $relationResolver;
+    protected MermaidRenderer $mermaidRenderer;
+
     public function __construct(
-        protected readonly TcaSchemaExtractor $tcaSchemaExtractor,
-        protected readonly RelationResolver $relationResolver,
-        protected readonly MermaidRenderer $mermaidRenderer,
-        ?string $name = null,
+        TcaSchemaExtractor $tcaSchemaExtractor,
+        RelationResolver $relationResolver,
+        MermaidRenderer $mermaidRenderer,
+        ?string $name = null
     ) {
+        $this->tcaSchemaExtractor = $tcaSchemaExtractor;
+        $this->relationResolver = $relationResolver;
+        $this->mermaidRenderer = $mermaidRenderer;
         parent::__construct($name);
     }
 
@@ -37,10 +44,20 @@ class GenerateErdCommand extends Command
         $this->addOption('include-empty', null, InputOption::VALUE_NONE, 'Include 0%-populated fields (requires --check-db)');
         $this->addOption('include-internal', null, InputOption::VALUE_NONE, 'Include internal TYPO3 fields');
         $this->addOption('no-core-tables', null, InputOption::VALUE_NONE, 'Exclude sys_category, sys_file_reference');
+        $this->addOption('list-extensions', null, InputOption::VALUE_NONE, 'List all extensions with TCA tables and exit');
+        $this->addOption('list-tables', null, InputOption::VALUE_NONE, 'List all TCA tables and exit');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        // List mode
+        if ($input->getOption('list-extensions')) {
+            return $this->listExtensions($output);
+        }
+        if ($input->getOption('list-tables')) {
+            return $this->listTables($output);
+        }
+
         $tables = $input->getArgument('tables');
         $extensionKey = (string)$input->getOption('extension');
 
@@ -57,6 +74,7 @@ class GenerateErdCommand extends Command
         $config->setIncludeInternal((bool)$input->getOption('include-internal'));
         $config->setIncludeCoreTables(!$input->getOption('no-core-tables'));
 
+        // Resolve root tables
         if ($extensionKey !== '') {
             $config->setExtensionKey($extensionKey);
             $rootTables = $this->tcaSchemaExtractor->getTablesForExtension($extensionKey);
@@ -70,6 +88,7 @@ class GenerateErdCommand extends Command
             $config->setTables($tables);
         }
 
+        // Resolve relations
         $tableSchemas = $this->relationResolver->resolve($rootTables, $config);
 
         if (empty($tableSchemas)) {
@@ -79,8 +98,10 @@ class GenerateErdCommand extends Command
 
         $output->writeln('<info>Resolved ' . count($tableSchemas) . ' tables</info>', OutputInterface::VERBOSITY_VERBOSE);
 
+        // Render
         $markdown = $this->mermaidRenderer->renderMarkdown($tableSchemas, $config);
 
+        // Output
         $outputFile = $input->getOption('output');
         if ($outputFile) {
             $dir = dirname($outputFile);
@@ -93,6 +114,25 @@ class GenerateErdCommand extends Command
             $output->write($markdown);
         }
 
+        return Command::SUCCESS;
+    }
+
+    protected function listExtensions(OutputInterface $output): int
+    {
+        $extensions = $this->tcaSchemaExtractor->getAllExtensionsWithTables();
+        foreach ($extensions as $extKey => $tables) {
+            $output->writeln('<info>' . $extKey . '</info>: ' . implode(', ', $tables));
+        }
+        return Command::SUCCESS;
+    }
+
+    protected function listTables(OutputInterface $output): int
+    {
+        $tables = array_keys($GLOBALS['TCA'] ?? []);
+        sort($tables);
+        foreach ($tables as $table) {
+            $output->writeln($table);
+        }
         return Command::SUCCESS;
     }
 }
