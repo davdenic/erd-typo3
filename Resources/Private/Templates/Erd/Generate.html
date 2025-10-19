@@ -28,7 +28,7 @@
                         <pre class="mermaid"><f:format.htmlspecialchars>{mermaidBlock}</f:format.htmlspecialchars></pre>
                     </div>
 
-                    <div style="margin-top: 15px;">
+                    <div class="btn-group" style="margin-top: 15px;">
                         <f:form action="download" method="post" style="display: inline;">
                             <f:if condition="{config.extensionKey}">
                                 <f:form.hidden name="extensionKey" value="{config.extensionKey}" />
@@ -50,6 +50,12 @@
                                 Download .md
                             </button>
                         </f:form>
+                        <button type="button" class="btn btn-default" id="copy-mermaid-btn">
+                            Copy Mermaid to clipboard
+                        </button>
+                        <button type="button" class="btn btn-default" id="copy-markdown-btn">
+                            Copy full Markdown
+                        </button>
                     </div>
                 </div>
             </div>
@@ -115,10 +121,27 @@
         <f:link.action action="index" class="btn btn-default">Back to form</f:link.action>
     </div>
 
+    <textarea id="mermaid-source" style="display:none;"><f:format.htmlspecialchars>{mermaidBlock}</f:format.htmlspecialchars></textarea>
+    <textarea id="markdown-source" style="display:none;"><f:format.htmlspecialchars>{markdown}</f:format.htmlspecialchars></textarea>
+
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });
+
+            document.getElementById('copy-mermaid-btn')?.addEventListener('click', function() {
+                var source = document.getElementById('mermaid-source').value;
+                navigator.clipboard.writeText(source).then(function() {
+                    alert('Mermaid code copied to clipboard');
+                });
+            });
+
+            document.getElementById('copy-markdown-btn')?.addEventListener('click', function() {
+                var source = document.getElementById('markdown-source').value;
+                navigator.clipboard.writeText(source).then(function() {
+                    alert('Markdown copied to clipboard');
+                });
+            });
         });
     </script>
 </f:section>
