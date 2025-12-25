@@ -108,9 +108,18 @@ class TcaSchemaExtractor
             $connection = GeneralUtility::makeInstance(ConnectionPool::class)
                 ->getConnectionForTable($tableName);
 
+            // Get actual DB columns to avoid querying non-existent columns
+            $dbColumnsRaw = $connection->executeQuery('SHOW COLUMNS FROM ' . $connection->quoteIdentifier($tableName))->fetchAllAssociative();
+            $dbColumns = array_map(function (array $col) { return $col['Field']; }, $dbColumnsRaw);
+            $queryFields = array_intersect($fieldNames, $dbColumns);
+
+            if (empty($queryFields)) {
+                return $result;
+            }
+
             // Build a single query with SUM(CASE...) per field
             $selectParts = [];
-            foreach ($fieldNames as $fieldName) {
+            foreach ($queryFields as $fieldName) {
                 $quoted = $connection->quoteIdentifier($fieldName);
                 $alias = $connection->quoteIdentifier('pop_' . $fieldName);
                 $selectParts[] = sprintf(
@@ -125,7 +134,7 @@ class TcaSchemaExtractor
             $row = $connection->executeQuery($sql)->fetchAssociative();
 
             if (is_array($row)) {
-                foreach ($fieldNames as $fieldName) {
+                foreach ($queryFields as $fieldName) {
                     $key = 'pop_' . $fieldName;
                     if (isset($row[$key])) {
                         $populated = (int)$row[$key];
@@ -162,6 +171,12 @@ class TcaSchemaExtractor
         }
         if ($type === 'password') {
             return 'password';
+        }
+        if ($type === 'uuid') {
+            return 'uuid';
+        }
+        if ($type === 'json') {
+            return 'json';
         }
         if ($type === 'file') {
             return 'file';
@@ -336,15 +351,19 @@ class TcaSchemaExtractor
 
     protected function detectExtensionKey(string $tableName, array $tca): string
     {
+        // Try iconfile path: EXT:my_ext/...
         $iconfile = (string)($tca['ctrl']['iconfile'] ?? '');
         if (strpos($iconfile, 'EXT:') === 0) {
             $parts = explode('/', substr($iconfile, 4), 2);
             return $parts[0] ?? '';
         }
 
+        // Try table prefix: tx_myext_domain_model_*
         if (strpos($tableName, 'tx_') === 0) {
             $parts = explode('_', $tableName);
+            // tx_{extkey}_ — find where "domain" starts or just use second segment
             if (count($parts) >= 3) {
+                // Heuristic: extension key is segments between tx_ and _domain_model_ (or the rest)
                 $domainIdx = array_search('domain', $parts, true);
                 if ($domainIdx !== false && $domainIdx > 1) {
                     return implode('_', array_slice($parts, 1, $domainIdx - 1));
@@ -353,6 +372,7 @@ class TcaSchemaExtractor
             }
         }
 
+        // Core tables
         if (strpos($tableName, 'sys_') === 0 || strpos($tableName, 'be_') === 0 || $tableName === 'pages' || $tableName === 'tt_content') {
             return 'core';
         }
