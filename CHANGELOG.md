@@ -1,5 +1,41 @@
 # Changelog
 
+## v3.0.0 — 2025-12-27
+
+Upgrade to TYPO3 13.4 LTS.
+
+### Breaking
+
+- Dropped TYPO3 12.4 support
+
+### Features
+
+- `--list-extensions` CLI option: list all extensions that own TCA tables
+- `--list-tables` CLI option: list all registered TCA table names
+- Copy-to-clipboard buttons in backend module (Mermaid code / full Markdown)
+
+### Fixes
+
+- Fixed field population query failing on tables where TCA columns don't exist
+  in the database schema (now uses `SHOW COLUMNS` to intersect)
+
+## v2.2.0 — 2024-09-15
+
+- Include date in download filename for easier archiving
+
+## v2.1.1 — 2024-08-04
+
+- Fix division by zero in population query for empty tables
+
+## v2.1.0 — 2024-05-19
+
+- Detect group fields with allowed tables as relations
+- Add slug field type to Mermaid type map
+
+## v2.0.2 — 2024-03-30
+
+- Fix Mermaid entity names containing dots breaking diagram
+
 ## v2.0.1 — 2024-01-02
 
 ### Fixes

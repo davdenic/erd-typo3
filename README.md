@@ -5,7 +5,7 @@ diagrams, Markdown documents, or directly in the TYPO3 backend.
 
 ## Requirements
 
-- TYPO3 12.4 LTS
+- TYPO3 13.4 LTS
 - PHP 8.2+
 
 ## Installation
@@ -27,10 +27,18 @@ composer require denic/erd
 - **DB population statistics** — optional per-field population percentages
   (how many records have a non-empty value)
 - **Mermaid cardinality** — renders proper ER notation (`||--o|`, `}o--o{`, etc.)
+- **Copy to clipboard** — one-click copy of Mermaid code or full Markdown
+- **Discovery** — `--list-extensions` and `--list-tables` to explore available TCA
 
 ## CLI Usage
 
 ```bash
+# List all extensions with TCA tables
+vendor/bin/typo3 erd:generate --list-extensions
+
+# List all TCA tables
+vendor/bin/typo3 erd:generate --list-tables
+
 # By extension
 vendor/bin/typo3 erd:generate --extension=my_ext
 
@@ -65,7 +73,8 @@ The module is available under **Web → ERD Generator** for admin users.
 3. Optionally enable DB population check
 4. Click **Generate ERD**
 5. View the rendered Mermaid diagram and per-table field lists
-6. Download as `.md` file
+6. Copy Mermaid code or full Markdown to clipboard
+7. Download as `.md` file
 
 ## License
 
