@@ -1,42 +1,50 @@
-<f:layout name="Admin" />
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
 
-<f:section name="headline">
+<f:layout name="Module" />
+<f:section name="Content">
+
     <h1>ERD Generator — Result</h1>
-</f:section>
-
-<f:section name="content">
-    <f:flashMessages />
 
     <f:if condition="{error}">
-        <div class="alert alert-danger">{error}</div>
+        <f:be.infobox state="{f:constant(name: 'TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::ERROR')}">
+            {error}
+        </f:be.infobox>
     </f:if>
 
     <f:if condition="{hasResult}">
         <f:then>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        Diagram
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0">
+                        Mermaid Code
                         <f:if condition="{config.extensionKey}">
                             — {config.extensionKey}
                         </f:if>
                         ({f:count(subject: tableSchemas)} tables, depth {config.depth})
                     </h3>
-                </div>
-                <div class="panel-body">
-                    <div class="erd-mermaid-container">
-                        <pre class="mermaid"><f:format.htmlspecialchars>{mermaidBlock}</f:format.htmlspecialchars></pre>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-default" id="copy-mermaid-btn">
+                            Copy Mermaid
+                        </button>
+                        <button type="button" class="btn btn-sm btn-default" id="copy-markdown-btn">
+                            Copy full Markdown
+                        </button>
                     </div>
+                </div>
+                <div class="card-body">
+                    <pre id="mermaid-source" class="bg-light p-3" style="max-height: 400px; overflow: auto;"><f:format.htmlspecialchars>{mermaidBlock}</f:format.htmlspecialchars></pre>
 
-                    <div class="btn-group" style="margin-top: 15px;">
+                    <div class="btn-group mt-3">
                         <f:form action="download" method="post" style="display: inline;">
                             <f:if condition="{config.extensionKey}">
                                 <f:form.hidden name="extensionKey" value="{config.extensionKey}" />
                                 <f:form.hidden name="mode" value="extension" />
                             </f:if>
                             <f:if condition="{config.tables}">
-                                <f:for each="{config.tables}" as="table">
-                                    <input type="hidden" name="tx_erd_web_erderd[tables][]" value="{table}" />
+                                <f:for each="{config.tables}" as="table" iteration="i">
+                                    <f:form.hidden name="tables.{i.index}" value="{table}" />
                                 </f:for>
                                 <f:form.hidden name="mode" value="tables" />
                             </f:if>
@@ -50,30 +58,24 @@
                                 Download .md
                             </button>
                         </f:form>
-                        <button type="button" class="btn btn-default" id="copy-mermaid-btn">
-                            Copy Mermaid to clipboard
-                        </button>
-                        <button type="button" class="btn btn-default" id="copy-markdown-btn">
-                            Copy full Markdown
-                        </button>
                     </div>
                 </div>
             </div>
 
             <f:for each="{tableSchemas}" as="tableSchema">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h3 class="card-title">
                             {tableSchema.tableName}
                             <f:if condition="{tableSchema.label} != {tableSchema.tableName}">
-                                <small>({tableSchema.label})</small>
+                                <small class="text-body-secondary">({tableSchema.label})</small>
                             </f:if>
                             <f:if condition="{tableSchema.recordCount} >= 0">
-                                <span class="badge">{tableSchema.recordCount} records</span>
+                                <span class="badge bg-secondary">{tableSchema.recordCount} records</span>
                             </f:if>
                         </h3>
                     </div>
-                    <table class="table table-striped table-condensed">
+                    <table class="table table-striped table-sm">
                         <thead>
                             <tr>
                                 <th>Field</th>
@@ -92,13 +94,13 @@
                                     <td>
                                         {field.type}
                                         <f:if condition="{field.foreignTable}">
-                                            <span class="text-muted">→ {field.foreignTable}</span>
+                                            <span class="text-body-secondary">→ {field.foreignTable}</span>
                                         </f:if>
                                     </td>
                                     <td>{field.label}</td>
                                     <td>
                                         <f:if condition="{field.required}">
-                                            <span class="label label-warning">required</span>
+                                            <span class="badge bg-warning">required</span>
                                         </f:if>
                                     </td>
                                     <f:if condition="{config.checkDb}">
@@ -117,31 +119,26 @@
         </f:then>
     </f:if>
 
-    <div style="margin-top: 20px;">
+    <div class="mt-4">
         <f:link.action action="index" class="btn btn-default">Back to form</f:link.action>
     </div>
 
-    <textarea id="mermaid-source" style="display:none;"><f:format.htmlspecialchars>{mermaidBlock}</f:format.htmlspecialchars></textarea>
     <textarea id="markdown-source" style="display:none;"><f:format.htmlspecialchars>{markdown}</f:format.htmlspecialchars></textarea>
 
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });
-
-            document.getElementById('copy-mermaid-btn')?.addEventListener('click', function() {
-                var source = document.getElementById('mermaid-source').value;
-                navigator.clipboard.writeText(source).then(function() {
-                    alert('Mermaid code copied to clipboard');
-                });
+        document.getElementById('copy-mermaid-btn')?.addEventListener('click', function() {
+            var source = document.getElementById('mermaid-source').textContent;
+            navigator.clipboard.writeText(source).then(function() {
+                alert('Mermaid code copied to clipboard');
             });
-
-            document.getElementById('copy-markdown-btn')?.addEventListener('click', function() {
-                var source = document.getElementById('markdown-source').value;
-                navigator.clipboard.writeText(source).then(function() {
-                    alert('Markdown copied to clipboard');
-                });
+        });
+        document.getElementById('copy-markdown-btn')?.addEventListener('click', function() {
+            var source = document.getElementById('markdown-source').value;
+            navigator.clipboard.writeText(source).then(function() {
+                alert('Markdown copied to clipboard');
             });
         });
     </script>
+
 </f:section>
+</html>
