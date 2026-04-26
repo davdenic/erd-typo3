@@ -13,11 +13,19 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 class ErdController extends ActionController
 {
+    protected TcaSchemaExtractor $tcaSchemaExtractor;
+    protected RelationResolver $relationResolver;
+    protected MermaidRenderer $mermaidRenderer;
+
     public function __construct(
-        protected readonly TcaSchemaExtractor $tcaSchemaExtractor,
-        protected readonly RelationResolver $relationResolver,
-        protected readonly MermaidRenderer $mermaidRenderer,
-    ) {}
+        TcaSchemaExtractor $tcaSchemaExtractor,
+        RelationResolver $relationResolver,
+        MermaidRenderer $mermaidRenderer
+    ) {
+        $this->tcaSchemaExtractor = $tcaSchemaExtractor;
+        $this->relationResolver = $relationResolver;
+        $this->mermaidRenderer = $mermaidRenderer;
+    }
 
     public function indexAction(): void
     {
@@ -49,6 +57,7 @@ class ErdController extends ActionController
             $markdown = $this->mermaidRenderer->renderMarkdown($tableSchemas, $config);
         }
 
+        // Re-populate form data
         $extensionsWithTables = $this->tcaSchemaExtractor->getAllExtensionsWithTables();
         $allTables = array_keys($GLOBALS['TCA'] ?? []);
         sort($allTables);
