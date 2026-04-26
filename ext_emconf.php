@@ -7,10 +7,10 @@ $EM_CONF['erd'] = [
     'author' => 'David Denicolo',
     'author_email' => '',
     'state' => 'stable',
-    'version' => '3.0.0',
+    'version' => '1.0.0',
     'constraints' => [
         'depends' => [
-            'typo3' => '13.4.0-13.4.99',
+            'typo3' => '11.5.0-13.4.99',
         ],
         'conflicts' => [],
         'suggests' => [],

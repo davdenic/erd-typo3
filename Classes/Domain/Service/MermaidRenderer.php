@@ -21,6 +21,7 @@ class MermaidRenderer
         $lines[] = '# ER Diagram';
         $lines[] = '';
 
+        // Extension or table info
         if ($config->getExtensionKey() !== '') {
             $lines[] = 'Extension: `' . $config->getExtensionKey() . '`';
         } else {
@@ -30,6 +31,7 @@ class MermaidRenderer
         $lines[] = 'Depth: ' . ($config->getDepth() === -1 ? 'unlimited' : (string)$config->getDepth());
         $lines[] = '';
 
+        // Mermaid diagram
         $lines[] = '## Diagram';
         $lines[] = '';
         $lines[] = '```mermaid';
@@ -37,6 +39,7 @@ class MermaidRenderer
         $lines[] = '```';
         $lines[] = '';
 
+        // Per-table field tables
         $lines[] = '## Tables';
         $lines[] = '';
         foreach ($tableSchemas as $tableSchema) {
@@ -52,6 +55,7 @@ class MermaidRenderer
             $lines[] = '';
         }
 
+        // Relations overview
         $relations = $this->collectRelations($tableSchemas);
         if (!empty($relations)) {
             $lines[] = '## Relations';
@@ -77,6 +81,7 @@ class MermaidRenderer
         $lines = [];
         $lines[] = 'erDiagram';
 
+        // Entity definitions
         foreach ($tableSchemas as $tableSchema) {
             $entityName = $this->sanitizeEntityName($tableSchema->getTableName());
             $fields = $tableSchema->getFields();
@@ -101,6 +106,7 @@ class MermaidRenderer
 
         $lines[] = '';
 
+        // Relationships
         foreach ($tableSchemas as $tableSchema) {
             $sourceEntity = $this->sanitizeEntityName($tableSchema->getTableName());
             foreach ($tableSchema->getRelationFields() as $field) {
@@ -187,7 +193,7 @@ class MermaidRenderer
     {
         $map = [
             'string' => 'string', 'email' => 'string', 'link' => 'string',
-            'color' => 'string', 'password' => 'string', 'slug' => 'string',
+            'color' => 'string', 'password' => 'string', 'uuid' => 'string', 'slug' => 'string',
             'number' => 'int', 'boolean' => 'int',
             'datetime' => 'datetime',
             'text' => 'text', 'richtext' => 'text',
