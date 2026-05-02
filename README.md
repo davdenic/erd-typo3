@@ -5,7 +5,7 @@ diagrams, Markdown documents, or directly in the TYPO3 backend.
 
 ## Requirements
 
-- TYPO3 13.4 LTS
+- TYPO3 11.5 / 12.4 / 13.4
 - PHP 8.2+
 
 ## Installation
@@ -29,6 +29,7 @@ composer require denic/erd
 - **Mermaid cardinality** — renders proper ER notation (`||--o|`, `}o--o{`, etc.)
 - **Copy to clipboard** — one-click copy of Mermaid code or full Markdown
 - **Discovery** — `--list-extensions` and `--list-tables` to explore available TCA
+- **Modern TCA types** — supports v12 dedicated types, v14 JSON and UUID fields
 
 ## CLI Usage
 

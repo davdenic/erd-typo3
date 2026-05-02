@@ -1,5 +1,23 @@
 # Changelog
 
+## v4.0.0 — 2026-05-03
+
+Multi-version support for TYPO3 11.5 / 12.4 / 13.4.
+
+### Features
+
+- Support for TYPO3 14 native `json` and `uuid` TCA field types
+- Wide composer constraint: `^11.5 || ^12.4 || ^13.4`
+- Dual backend module registration (`ext_tables.php` for v11 + `Modules.php` for v12+)
+
+## v3.1.0 — 2026-02-14
+
+- Add relations overview table to generated Markdown
+
+## v3.0.1 — 2026-01-04
+
+- Fix clipboard API blocked in TYPO3 13 backend iframe context
+
 ## v3.0.0 — 2025-12-27
 
 Upgrade to TYPO3 13.4 LTS.
