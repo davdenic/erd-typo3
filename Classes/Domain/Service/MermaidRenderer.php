@@ -87,8 +87,7 @@ class MermaidRenderer
             $fields = $tableSchema->getFields();
 
             if (empty($fields)) {
-                $lines[] = '    ' . $entityName . ' {';
-                $lines[] = '    }';
+                $lines[] = '    ' . $entityName;
             } else {
                 $lines[] = '    ' . $entityName . ' {';
                 foreach ($fields as $field) {
@@ -116,8 +115,9 @@ class MermaidRenderer
                 }
                 $targetEntity = $this->sanitizeEntityName($foreignTable);
                 $cardinality = $this->mermaidCardinality($field);
-                $label = $field->getName();
-                $lines[] = '    ' . $sourceEntity . ' ' . $cardinality . ' ' . $targetEntity . ' : "' . $label . '"';
+                $label = $this->sanitizeLabel($field->getName());
+                $cardinalityLabel = $this->cardinalityLabel($field);
+                $lines[] = '    ' . $sourceEntity . ' ' . $cardinality . ' ' . $targetEntity . ' : "' . $label . ' ' . $cardinalityLabel . '"';
             }
         }
 
@@ -181,26 +181,34 @@ class MermaidRenderer
 
     protected function sanitizeEntityName(string $name): string
     {
-        return str_replace(['-', '.'], '_', $name);
+        // Mermaid only allows alphanumeric and underscores in entity names
+        return preg_replace('/[^a-zA-Z0-9_]/', '_', $name);
     }
 
     protected function sanitizeFieldName(string $name): string
     {
-        return str_replace(['-', '.', ' '], '_', $name);
+        // Mermaid only allows alphanumeric and underscores in field names
+        return preg_replace('/[^a-zA-Z0-9_]/', '_', $name);
+    }
+
+    protected function sanitizeLabel(string $label): string
+    {
+        // Escape quotes in relationship labels
+        return str_replace(['"', "\n", "\r"], ['', ' ', ''], $label);
     }
 
     protected function mermaidType(string $type): string
     {
         $map = [
-            'string' => 'string', 'email' => 'string', 'link' => 'string',
-            'color' => 'string', 'password' => 'string', 'uuid' => 'string', 'slug' => 'string',
-            'number' => 'int', 'boolean' => 'int',
-            'datetime' => 'datetime',
-            'text' => 'text', 'richtext' => 'text',
-            'file' => 'file',
-            'relation' => 'fk', 'category' => 'fk',
-            'select' => 'enum', 'radio' => 'enum',
-            'flexform' => 'json',
+            'string' => 'varchar', 'email' => 'varchar', 'link' => 'varchar',
+            'color' => 'varchar', 'password' => 'varchar', 'uuid' => 'varchar', 'slug' => 'varchar',
+            'number' => 'int', 'boolean' => 'bool',
+            'datetime' => 'date',
+            'text' => 'varchar', 'richtext' => 'varchar',
+            'file' => 'blob',
+            'relation' => 'ref', 'category' => 'ref',
+            'select' => 'int', 'radio' => 'int',
+            'flexform' => 'blob',
         ];
         return $map[$type] ?? 'string';
     }
@@ -215,6 +223,18 @@ class MermaidRenderer
             'file' => '||--o{',
         ];
         return $map[$field->getRelationKind()] ?? '||--o{';
+    }
+
+    protected function cardinalityLabel(FieldSchema $field): string
+    {
+        $map = [
+            'fk' => '(0:1)',
+            'mm' => '(n:m)',
+            'category' => '(n:m)',
+            'inline' => '(1:n)',
+            'file' => '(1:n)',
+        ];
+        return $map[$field->getRelationKind()] ?? '(1:n)';
     }
 
     protected function escapeMarkdown(string $text): string
