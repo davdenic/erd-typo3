@@ -191,29 +191,7 @@ class TcaSchemaExtractor
             return 'slug';
         }
 
-        // v11 input type with renderType/eval disambiguation
         if ($type === 'input') {
-            $renderType = (string)($config['renderType'] ?? '');
-            $eval = (string)($config['eval'] ?? '');
-
-            if ($renderType === 'inputDateTime') {
-                return 'datetime';
-            }
-            if ($renderType === 'inputLink') {
-                return 'link';
-            }
-            if ($renderType === 'colorPicker') {
-                return 'color';
-            }
-            if (strpos($eval, 'email') !== false) {
-                return 'email';
-            }
-            if (strpos($eval, 'int') !== false || strpos($eval, 'double2') !== false) {
-                return 'number';
-            }
-            if (strpos($eval, 'password') !== false) {
-                return 'password';
-            }
             return 'string';
         }
 
