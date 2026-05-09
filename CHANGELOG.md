@@ -1,6 +1,10 @@
 # Changelog
 
-## v4.1.0 — 2026-05-03
+## v4.2.0
+
+- add TYPO3 extension documentation
+
+## v4.1.0
 
 - ModuleTemplateFactory, proper backend styling
 - fix mermaid reserved words (fk, text, etc.)
@@ -9,19 +13,19 @@
 - copy to clipboard, download .md
 - TYPO3 14 only, PHP 8.3+
 
-## v4.0.0 — 2026-05-03
+## v4.0.0
 
 - upgrade to TYPO3 14
 - json and uuid TCA field types
 
-## v3.0.0 — 2025-12-27
+## v3.0.0
 
 - upgrade to TYPO3 13.4
 
-## v2.0.0 — 2023-12-31
+## v2.0.0
 
 - upgrade to TYPO3 12.4
 
-## v1.0.0 — 2023-01-01
+## v1.0.0
 
 - initial release for TYPO3 11.5
