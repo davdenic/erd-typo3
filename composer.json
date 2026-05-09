@@ -24,5 +24,15 @@
         "typo3/cms": {
             "extension-key": "erd"
         }
+    },
+    "scripts": {
+        "prepare-release": [
+            "@extension-create-libs",
+            "rm -rf .devbox",
+            "rm -rf Tests/",
+            "rm .gitignore",
+            "rm .scrutinizer.yml",
+            "rm disabled.travis.yml"
+        ]
     }
 }
