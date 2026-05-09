@@ -1,14 +1,18 @@
 # Changelog
 
-## v1.0.0 — 2023-01-01
+## v1.2.0
 
-Initial release for TYPO3 11.5.
+- add TYPO3 extension documentation
 
-### Features
+## v1.1.1
 
-- TCA schema extractor with field type resolution (v11 `input` + `eval`/`renderType` patterns)
-- Relation resolver with BFS traversal up to configurable depth
-- Mermaid `erDiagram` renderer with Obsidian-compatible Markdown output
-- CLI command `erd:generate` with `--extension`, `--depth`, `--lang`, `--output` options
-- Backend module (Web → ERD Generator) with extension/table selector and download
-- German translations for backend labels
+- fix: TypeError on passthrough fields
+
+## v1.0.0
+
+- initial release for TYPO3 11.5
+- TCA schema extractor with field type resolution
+- relation resolver with BFS traversal
+- mermaid erDiagram renderer
+- CLI command erd:generate
+- backend module (Web > ERD Generator)
