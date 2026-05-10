@@ -83,7 +83,7 @@ class MermaidRendererTest extends TestCase
     {
         $tables = [
             'tx_blog_post' => new TableSchema('tx_blog_post', '', '', [
-                'categories' => new FieldSchema('categories', 'relation', 'Categories', false, 'mm', 'sys_category', 'tx_blog_post_category_mm'),
+                'categories' => new FieldSchema('categories', 'relation', 'Categories', false, 'csv', 'sys_category', 'tx_blog_post_category_mm'),
             ]),
             'sys_category' => new TableSchema('sys_category', 'Category', 'core'),
         ];

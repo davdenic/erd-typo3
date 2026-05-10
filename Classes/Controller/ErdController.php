@@ -133,11 +133,7 @@ class ErdController extends ActionController
         return $config;
     }
 
-    /**
-     * @param mixed $default
-     * @return mixed
-     */
-    protected function getRequestArgument(string $name, $default = null)
+    protected function getRequestArgument(string $name, mixed $default = null): mixed
     {
         if ($this->request->hasArgument($name)) {
             return $this->request->getArgument($name);
