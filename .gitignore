@@ -2,3 +2,5 @@
 vendor/
 node_modules/
 Documentation-GENERATED-temp/
+.phpunit.cache/
+coverage.xml
