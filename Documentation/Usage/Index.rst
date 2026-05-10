@@ -7,7 +7,7 @@ Usage
 Backend Module
 ==============
 
-Go to **Web → ERD Generator**.
+Go to **System → ERD Generator**.
 
 1. Pick an extension or select tables.
 2. Set depth.
