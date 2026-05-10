@@ -143,6 +143,8 @@ class TcaSchemaExtractorTest extends TestCase
             'flex' => [['type' => 'flex'], 'flexform'],
             'passthrough' => [['type' => 'passthrough'], 'passthrough'],
             'folder' => [['type' => 'folder'], 'folder'],
+            'user' => [['type' => 'user'], 'user'],
+            'none' => [['type' => 'none'], 'none'],
         ];
     }
 
@@ -176,6 +178,7 @@ class TcaSchemaExtractorTest extends TestCase
             'select csv by maxitems' => [['type' => 'select', 'foreign_table' => 'pages', 'maxitems' => 10], 'csv'],
             'select explicit mm' => [['type' => 'select', 'foreign_table' => 'pages', 'MM' => 'some_mm'], 'mm'],
             'group fk' => [['type' => 'group', 'allowed' => 'pages'], 'fk'],
+            'group allowed with mm' => [['type' => 'group', 'allowed' => 'pages', 'MM' => 'tx_test_mm'], 'mm'],
         ];
     }
 
@@ -223,6 +226,35 @@ class TcaSchemaExtractorTest extends TestCase
 
         self::assertSame('sys_category', $field->getForeignTable());
         self::assertSame('category', $field->getRelationKind());
+    }
+
+    #[Test]
+    public function extractTableResolvesLllLabels(): void
+    {
+        $GLOBALS['TCA']['test'] = [
+            'ctrl' => ['title' => 'LLL:EXT:test/Resources/Private/Language/locallang.xlf:table.title'],
+            'columns' => [
+                'field' => [
+                    'label' => 'LLL:EXT:test/Resources/Private/Language/locallang.xlf:field.label',
+                    'config' => ['type' => 'input'],
+                ],
+            ],
+        ];
+
+        $languageServiceMock = $this->createMock(\TYPO3\CMS\Core\Localization\LanguageService::class);
+        $languageServiceMock->method('sL')->willReturnMap([
+            ['LLL:EXT:test/Resources/Private/Language/locallang.xlf:table.title', 'Resolved Table'],
+            ['LLL:EXT:test/Resources/Private/Language/locallang.xlf:field.label', 'Resolved Field'],
+        ]);
+        $GLOBALS['LANG'] = $languageServiceMock;
+
+        $config = new ErdConfiguration();
+        $schema = $this->extractor->extractTable('test', $config);
+
+        self::assertSame('Resolved Table', $schema->getLabel());
+        self::assertSame('Resolved Field', $schema->getFields()['field']->getLabel());
+
+        unset($GLOBALS['LANG']);
     }
 
     #[Test]
