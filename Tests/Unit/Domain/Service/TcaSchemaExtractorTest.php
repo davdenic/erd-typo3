@@ -173,7 +173,7 @@ class TcaSchemaExtractorTest extends TestCase
             'inline' => [['type' => 'inline', 'foreign_table' => 'tx_blog_comment'], 'inline'],
             'inline mm' => [['type' => 'inline', 'foreign_table' => 'tx_blog_tag', 'MM' => 'tx_blog_post_tag_mm'], 'mm'],
             'select fk' => [['type' => 'select', 'foreign_table' => 'pages', 'maxitems' => 1], 'fk'],
-            'select mm by maxitems' => [['type' => 'select', 'foreign_table' => 'pages', 'maxitems' => 10], 'mm'],
+            'select csv by maxitems' => [['type' => 'select', 'foreign_table' => 'pages', 'maxitems' => 10], 'csv'],
             'select explicit mm' => [['type' => 'select', 'foreign_table' => 'pages', 'MM' => 'some_mm'], 'mm'],
             'group fk' => [['type' => 'group', 'allowed' => 'pages'], 'fk'],
         ];

@@ -218,6 +218,7 @@ class MermaidRenderer
         $map = [
             'fk' => '||--o|',
             'mm' => '}o--o{',
+            'csv' => '}o--o{',
             'category' => '}o--o{',
             'inline' => '||--o{',
             'file' => '||--o{',
@@ -230,6 +231,7 @@ class MermaidRenderer
         $map = [
             'fk' => '(0:1)',
             'mm' => '(n:m)',
+            'csv' => '(n:m)',
             'category' => '(n:m)',
             'inline' => '(1:n)',
             'file' => '(1:n)',
