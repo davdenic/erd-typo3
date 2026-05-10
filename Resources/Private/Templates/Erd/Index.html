@@ -18,7 +18,6 @@
                         options="{extension: 'By extension', tables: 'By table(s)'}"
                         value="extension"
                         class="form-select"
-                        additionalAttributes="{onchange: 'document.getElementById(\'ext-select\').style.display = this.value === \'extension\' ? \'block\' : \'none\'; document.getElementById(\'table-select\').style.display = this.value === \'tables\' ? \'block\' : \'none\';'}"
                     />
                 </div>
 
@@ -103,6 +102,13 @@
             </button>
         </div>
     </f:form>
+
+    <script>
+        document.getElementById('mode')?.addEventListener('change', function() {
+            document.getElementById('ext-select').style.display = this.value === 'extension' ? 'block' : 'none';
+            document.getElementById('table-select').style.display = this.value === 'tables' ? 'block' : 'none';
+        });
+    </script>
 
 </f:section>
 </html>
