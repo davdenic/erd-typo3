@@ -2,6 +2,8 @@
 
 ## 4.x (TYPO3 14)
 
+- Modernize PHP: constructor promotion, `match` expressions, `str_starts_with()`/`str_contains()`
+- Fix: distinguish `csv` relation kind from `mm` for multi-value fields without MM table
 - Move backend module from Web to System group (full width, no page tree)
 - Move inline JS to external file for CSP compliance
 - Theme-aware module icon (adapts to modern/classic/fresh, light/dark)

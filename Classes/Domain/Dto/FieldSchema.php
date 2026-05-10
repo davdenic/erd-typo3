@@ -6,34 +6,16 @@ namespace Denic\Erd\Domain\Dto;
 
 class FieldSchema
 {
-    protected string $name;
-    protected string $type;
-    protected string $label;
-    protected bool $required;
-    protected string $relationKind;
-    protected string $foreignTable;
-    protected string $mmTable;
-    protected int $populationPercent;
-
     public function __construct(
-        string $name,
-        string $type = 'string',
-        string $label = '',
-        bool $required = false,
-        string $relationKind = '',
-        string $foreignTable = '',
-        string $mmTable = '',
-        int $populationPercent = -1
-    ) {
-        $this->name = $name;
-        $this->type = $type;
-        $this->label = $label;
-        $this->required = $required;
-        $this->relationKind = $relationKind;
-        $this->foreignTable = $foreignTable;
-        $this->mmTable = $mmTable;
-        $this->populationPercent = $populationPercent;
-    }
+        protected readonly string $name,
+        protected readonly string $type = 'string',
+        protected readonly string $label = '',
+        protected readonly bool $required = false,
+        protected readonly string $relationKind = '',
+        protected readonly string $foreignTable = '',
+        protected readonly string $mmTable = '',
+        protected readonly int $populationPercent = -1
+    ) {}
 
     public function getName(): string
     {
