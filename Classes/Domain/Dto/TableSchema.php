@@ -6,30 +6,16 @@ namespace Denic\Erd\Domain\Dto;
 
 class TableSchema
 {
-    protected string $tableName;
-    protected string $label;
-    protected string $extensionKey;
-
-    /** @var array<string, FieldSchema> */
-    protected array $fields;
-    protected int $recordCount;
-
     /**
      * @param array<string, FieldSchema> $fields
      */
     public function __construct(
-        string $tableName,
-        string $label = '',
-        string $extensionKey = '',
-        array $fields = [],
-        int $recordCount = -1
-    ) {
-        $this->tableName = $tableName;
-        $this->label = $label;
-        $this->extensionKey = $extensionKey;
-        $this->fields = $fields;
-        $this->recordCount = $recordCount;
-    }
+        protected readonly string $tableName,
+        protected readonly string $label = '',
+        protected readonly string $extensionKey = '',
+        protected array $fields = [],
+        protected readonly int $recordCount = -1
+    ) {}
 
     public function getTableName(): string
     {

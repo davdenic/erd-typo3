@@ -153,102 +153,47 @@ class TcaSchemaExtractor
     {
         $type = (string)($config['type'] ?? 'input');
 
-        // v12 dedicated types
-        if ($type === 'email') {
-            return 'email';
-        }
-        if ($type === 'link') {
-            return 'link';
-        }
-        if ($type === 'datetime') {
-            return 'datetime';
-        }
-        if ($type === 'number') {
-            return 'number';
-        }
-        if ($type === 'color') {
-            return 'color';
-        }
-        if ($type === 'password') {
-            return 'password';
-        }
-        if ($type === 'uuid') {
-            return 'uuid';
-        }
-        if ($type === 'json') {
-            return 'json';
-        }
-        if ($type === 'file') {
-            return 'file';
-        }
-        if ($type === 'folder') {
-            return 'folder';
-        }
-        if ($type === 'category') {
-            return 'category';
-        }
-        if ($type === 'slug') {
-            return 'slug';
-        }
-
-        if ($type === 'input') {
-            return 'string';
-        }
-
+        // Conditional cases that need logic beyond simple mapping
         if ($type === 'text') {
-            if (!empty($config['enableRichtext'])) {
-                return 'richtext';
-            }
-            return 'text';
-        }
-
-        if ($type === 'check') {
-            return 'boolean';
-        }
-
-        if ($type === 'radio') {
-            return 'radio';
+            return !empty($config['enableRichtext']) ? 'richtext' : 'text';
         }
 
         if ($type === 'select') {
-            if (!empty($config['foreign_table'])) {
-                return 'relation';
-            }
-            return 'select';
+            return !empty($config['foreign_table']) ? 'relation' : 'select';
         }
 
         if ($type === 'group') {
-            if (!empty($config['allowed'])) {
-                return 'relation';
-            }
-            return 'group';
+            return !empty($config['allowed']) ? 'relation' : 'group';
         }
 
         if ($type === 'inline') {
             $foreignTable = (string)($config['foreign_table'] ?? '');
-            if ($foreignTable === 'sys_file_reference') {
-                return 'file';
-            }
-            return 'relation';
+            return $foreignTable === 'sys_file_reference' ? 'file' : 'relation';
         }
 
-        if ($type === 'flex') {
-            return 'flexform';
-        }
-
-        if ($type === 'passthrough') {
-            return 'passthrough';
-        }
-
-        if ($type === 'user') {
-            return 'user';
-        }
-
-        if ($type === 'none') {
-            return 'none';
-        }
-
-        return $type;
+        // Simple identity and rename mappings
+        return match ($type) {
+            'email' => 'email',
+            'link' => 'link',
+            'datetime' => 'datetime',
+            'number' => 'number',
+            'color' => 'color',
+            'password' => 'password',
+            'uuid' => 'uuid',
+            'json' => 'json',
+            'file' => 'file',
+            'folder' => 'folder',
+            'category' => 'category',
+            'slug' => 'slug',
+            'input' => 'string',
+            'check' => 'boolean',
+            'radio' => 'radio',
+            'flex' => 'flexform',
+            'passthrough' => 'passthrough',
+            'user' => 'user',
+            'none' => 'none',
+            default => $type,
+        };
     }
 
     protected function resolveRelationKind(array $config): string
@@ -277,7 +222,7 @@ class TcaSchemaExtractor
                 return 'mm';
             }
             $maxitems = (int)($config['maxitems'] ?? 1);
-            return $maxitems <= 1 ? 'fk' : 'mm';
+            return $maxitems <= 1 ? 'fk' : 'csv';
         }
 
         if ($type === 'group' && !empty($config['allowed']) && $foreignTable === '') {
@@ -285,7 +230,7 @@ class TcaSchemaExtractor
             if ($mm !== '') {
                 return 'mm';
             }
-            if (strpos($allowed, ',') === false) {
+            if (!str_contains($allowed, ',')) {
                 return 'fk';
             }
         }
@@ -296,7 +241,7 @@ class TcaSchemaExtractor
     protected function isRequired(array $config): bool
     {
         $eval = (string)($config['eval'] ?? '');
-        if (strpos($eval, 'required') !== false) {
+        if (str_contains($eval, 'required')) {
             return true;
         }
 
@@ -315,7 +260,7 @@ class TcaSchemaExtractor
 
     protected function resolveLabel(string $label, string $lang): string
     {
-        if (strpos($label, 'LLL:') === 0) {
+        if (str_starts_with($label, 'LLL:')) {
             $languageService = $this->getLanguageService();
             if ($languageService !== null) {
                 $resolved = $languageService->sL($label);
@@ -331,13 +276,13 @@ class TcaSchemaExtractor
     {
         // Try iconfile path: EXT:my_ext/...
         $iconfile = (string)($tca['ctrl']['iconfile'] ?? '');
-        if (strpos($iconfile, 'EXT:') === 0) {
+        if (str_starts_with($iconfile, 'EXT:')) {
             $parts = explode('/', substr($iconfile, 4), 2);
             return $parts[0] ?? '';
         }
 
         // Try table prefix: tx_myext_domain_model_*
-        if (strpos($tableName, 'tx_') === 0) {
+        if (str_starts_with($tableName, 'tx_')) {
             $parts = explode('_', $tableName);
             // tx_{extkey}_ — find where "domain" starts or just use second segment
             if (count($parts) >= 3) {
@@ -351,7 +296,7 @@ class TcaSchemaExtractor
         }
 
         // Core tables
-        if (strpos($tableName, 'sys_') === 0 || strpos($tableName, 'be_') === 0 || $tableName === 'pages' || $tableName === 'tt_content') {
+        if (str_starts_with($tableName, 'sys_') || str_starts_with($tableName, 'be_') || $tableName === 'pages' || $tableName === 'tt_content') {
             return 'core';
         }
 
