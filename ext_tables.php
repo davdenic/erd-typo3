@@ -8,7 +8,7 @@ defined('TYPO3_MODE') || die();
 (function () {
     ExtensionUtility::registerModule(
         'Erd',
-        'web',
+        'system',
         'erd',
         '',
         [
@@ -18,6 +18,7 @@ defined('TYPO3_MODE') || die();
             'access' => 'admin',
             'icon' => 'EXT:erd/Resources/Public/Icons/be_module.svg',
             'labels' => 'LLL:EXT:erd/Resources/Private/Language/locallang.xlf',
+            'navigationComponentId' => '',
         ]
     );
 })();
