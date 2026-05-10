@@ -3,10 +3,11 @@
 use Denic\Erd\Controller\ErdController;
 
 return [
-    'web_erd' => [
-        'parent' => 'web',
+    'system_erd' => [
+        'parent' => 'system',
         'access' => 'admin',
-        'path' => '/module/web/erd',
+        'path' => '/module/system/erd',
+        'navigationComponent' => '',
         'icon' => 'EXT:erd/Resources/Public/Icons/be_module.svg',
         'labels' => 'LLL:EXT:erd/Resources/Private/Language/locallang.xlf',
         'extensionName' => 'Erd',

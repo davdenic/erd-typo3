@@ -125,20 +125,5 @@
 
     <textarea id="markdown-source" style="display:none;"><f:format.htmlspecialchars>{markdown}</f:format.htmlspecialchars></textarea>
 
-    <script>
-        document.getElementById('copy-mermaid-btn')?.addEventListener('click', function() {
-            var source = document.getElementById('mermaid-source').textContent;
-            navigator.clipboard.writeText(source).then(function() {
-                alert('Mermaid code copied to clipboard');
-            });
-        });
-        document.getElementById('copy-markdown-btn')?.addEventListener('click', function() {
-            var source = document.getElementById('markdown-source').value;
-            navigator.clipboard.writeText(source).then(function() {
-                alert('Markdown copied to clipboard');
-            });
-        });
-    </script>
-
 </f:section>
 </html>
