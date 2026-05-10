@@ -7,7 +7,7 @@
 <f:section name="content">
     <f:flashMessages />
 
-    <f:form action="generate" objectName="erd" method="post">
+    <f:form action="generate" method="post">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">Configuration</h3>
@@ -17,29 +17,37 @@
                     <div class="col-xs-12 col-md-6">
                         <div class="form-group">
                             <label for="mode">Mode</label>
-                            <select name="tx_erd_web_erderd[mode]" id="mode" class="form-control" onchange="document.getElementById('ext-select').style.display = this.value === 'extension' ? 'block' : 'none'; document.getElementById('table-select').style.display = this.value === 'tables' ? 'block' : 'none';">
-                                <option value="extension">By extension</option>
-                                <option value="tables">By table(s)</option>
-                            </select>
+                            <f:form.select
+                                name="mode"
+                                id="mode"
+                                options="{extension: 'By extension', tables: 'By table(s)'}"
+                                value="extension"
+                                class="form-control"
+                            />
                         </div>
 
                         <div class="form-group" id="ext-select">
                             <label for="extensionKey">Extension</label>
-                            <select name="tx_erd_web_erderd[extensionKey]" id="extensionKey" class="form-control">
-                                <option value="">-- Select extension --</option>
-                                <f:for each="{extensionsWithTables}" as="tables" key="extKey">
-                                    <option value="{extKey}">{extKey} ({f:count(subject: tables)} tables)</option>
-                                </f:for>
-                            </select>
+                            <f:form.select
+                                name="extensionKey"
+                                id="extensionKey"
+                                options="{extensionOptions}"
+                                prependOptionLabel="-- Select extension --"
+                                prependOptionValue=""
+                                class="form-control"
+                            />
                         </div>
 
                         <div class="form-group" id="table-select" style="display: none;">
                             <label for="tables">Tables</label>
-                            <select name="tx_erd_web_erderd[tables][]" id="tables" class="form-control" multiple="multiple" size="12">
-                                <f:for each="{allTables}" as="table">
-                                    <option value="{table}">{table}</option>
-                                </f:for>
-                            </select>
+                            <f:form.select
+                                name="tables"
+                                id="tables"
+                                options="{allTableOptions}"
+                                multiple="1"
+                                size="12"
+                                class="form-control"
+                            />
                             <p class="help-block">Hold Ctrl/Cmd to select multiple tables</p>
                         </div>
                     </div>
@@ -47,35 +55,38 @@
                     <div class="col-xs-12 col-md-6">
                         <div class="form-group">
                             <label for="depth">Relationship depth</label>
-                            <select name="tx_erd_web_erderd[depth]" id="depth" class="form-control">
-                                <option value="0">0 — selected tables only</option>
-                                <option value="1">1 — direct relations</option>
-                                <option value="2" selected="selected">2 — two hops (default)</option>
-                                <option value="3">3 — three hops</option>
-                                <option value="-1">Unlimited</option>
-                            </select>
+                            <f:form.select
+                                name="depth"
+                                id="depth"
+                                options="{0: '0 — selected tables only', 1: '1 — direct relations', 2: '2 — two hops (default)', 3: '3 — three hops', -1: 'Unlimited'}"
+                                value="2"
+                                class="form-control"
+                            />
                         </div>
 
                         <div class="form-group">
                             <label for="lang">Label language</label>
-                            <select name="tx_erd_web_erderd[lang]" id="lang" class="form-control">
-                                <option value="de" selected="selected">Deutsch</option>
-                                <option value="en">English</option>
-                            </select>
+                            <f:form.select
+                                name="lang"
+                                id="lang"
+                                options="{de: 'Deutsch', en: 'English'}"
+                                value="de"
+                                class="form-control"
+                            />
                         </div>
 
                         <div class="checkbox">
                             <label>
-                                <input type="hidden" name="tx_erd_web_erderd[includeInternal]" value="0" />
-                                <input type="checkbox" name="tx_erd_web_erderd[includeInternal]" value="1" />
+                                <f:form.hidden name="includeInternal" value="0" />
+                                <f:form.checkbox name="includeInternal" value="1" />
                                 Include internal TYPO3 fields (uid, pid, hidden, ...)
                             </label>
                         </div>
 
                         <div class="checkbox">
                             <label>
-                                <input type="hidden" name="tx_erd_web_erderd[includeCoreTables]" value="0" />
-                                <input type="checkbox" name="tx_erd_web_erderd[includeCoreTables]" value="1" checked="checked" />
+                                <f:form.hidden name="includeCoreTables" value="0" />
+                                <f:form.checkbox name="includeCoreTables" value="1" checked="1" />
                                 Include core tables (sys_category, sys_file_reference)
                             </label>
                         </div>
@@ -92,4 +103,11 @@
             </div>
         </div>
     </f:form>
+
+    <script>
+        document.getElementById('mode')?.addEventListener('change', function() {
+            document.getElementById('ext-select').style.display = this.value === 'extension' ? 'block' : 'none';
+            document.getElementById('table-select').style.display = this.value === 'tables' ? 'block' : 'none';
+        });
+    </script>
 </f:section>
