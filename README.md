@@ -15,7 +15,7 @@ composer require denic/erd
 
 ## Usage
 
-Backend module: **Web → ERD Generator**
+Backend module: **System → ERD Generator**
 
 CLI:
 ```bash

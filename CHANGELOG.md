@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.5.0
+
+- Move backend module from Web to System group (full width, no page tree)
+- Move inline JS to external file for CSP compliance
+- Theme-aware module icon (adapts to modern/classic/fresh, light/dark)
+
 ## 4.x (TYPO3 14)
 
 - ModuleTemplateFactory, proper backend styling
