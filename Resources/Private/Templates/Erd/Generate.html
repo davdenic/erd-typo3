@@ -33,8 +33,8 @@
                                 <f:form.hidden name="mode" value="extension" />
                             </f:if>
                             <f:if condition="{config.tables}">
-                                <f:for each="{config.tables}" as="table">
-                                    <input type="hidden" name="tx_erd_web_erderd[tables][]" value="{table}" />
+                                <f:for each="{config.tables}" as="table" iteration="i">
+                                    <f:form.hidden name="tables.{i.index}" value="{table}" />
                                 </f:for>
                                 <f:form.hidden name="mode" value="tables" />
                             </f:if>

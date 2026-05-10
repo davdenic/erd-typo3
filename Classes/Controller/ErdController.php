@@ -35,14 +35,7 @@ class ErdController extends ActionController
 
     public function indexAction(): void
     {
-        $extensionsWithTables = $this->tcaSchemaExtractor->getAllExtensionsWithTables();
-        $allTables = array_keys($GLOBALS['TCA'] ?? []);
-        sort($allTables);
-
-        $this->view->assignMultiple([
-            'extensionsWithTables' => $extensionsWithTables,
-            'allTables' => $allTables,
-        ]);
+        $this->assignFormData();
     }
 
     public function generateAction(): void
@@ -63,13 +56,9 @@ class ErdController extends ActionController
             $markdown = $this->mermaidRenderer->renderMarkdown($tableSchemas, $config);
         }
 
-        $extensionsWithTables = $this->tcaSchemaExtractor->getAllExtensionsWithTables();
-        $allTables = array_keys($GLOBALS['TCA'] ?? []);
-        sort($allTables);
+        $this->assignFormData();
 
         $this->view->assignMultiple([
-            'extensionsWithTables' => $extensionsWithTables,
-            'allTables' => $allTables,
             'tableSchemas' => $tableSchemas,
             'mermaidBlock' => $mermaidBlock,
             'markdown' => $markdown,
@@ -100,6 +89,24 @@ class ErdController extends ActionController
         return $response
             ->withHeader('Content-Type', 'text/markdown; charset=utf-8')
             ->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
+    }
+
+    protected function assignFormData(): void
+    {
+        $extensionsWithTables = $this->tcaSchemaExtractor->getAllExtensionsWithTables();
+        $extensionOptions = [];
+        foreach ($extensionsWithTables as $extKey => $tables) {
+            $extensionOptions[$extKey] = $extKey . ' (' . count($tables) . ' tables)';
+        }
+
+        $allTables = array_keys($GLOBALS['TCA'] ?? []);
+        sort($allTables);
+        $allTableOptions = array_combine($allTables, $allTables);
+
+        $this->view->assignMultiple([
+            'extensionOptions' => $extensionOptions,
+            'allTableOptions' => $allTableOptions,
+        ]);
     }
 
     protected function buildConfigFromRequest(): ErdConfiguration
