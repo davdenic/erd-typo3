@@ -4,16 +4,12 @@
 Changelog
 =========
 
-4.5.0
-=====
+4.x (TYPO3 14)
+===============
 
 -  Move backend module from Web to System group (full width, no page tree)
 -  Move inline JS to external file for CSP compliance
 -  Theme-aware module icon (adapts to modern/classic/fresh, light/dark)
-
-4.x (TYPO3 14)
-===============
-
 -  ModuleTemplateFactory, proper backend styling
 -  Fix mermaid reserved words (fk, text, etc.)
 -  Fix empty entity blocks
@@ -25,6 +21,8 @@ Changelog
 3.x (TYPO3 13)
 ===============
 
+-  Move backend module from Web to System group
+-  Move inline JS to external file for CSP compliance
 -  Upgrade to TYPO3 13.4
 -  ``--list-extensions``, ``--list-tables`` CLI options
 -  Fix population query on missing DB columns
@@ -33,6 +31,8 @@ Changelog
 2.x (TYPO3 12)
 ===============
 
+-  Move backend module from Web to System group
+-  Move inline JS to external file for CSP compliance
 -  Upgrade to TYPO3 12.4
 -  v12 TCA types, DB population stats
 -  PHP 8.2+
@@ -40,6 +40,8 @@ Changelog
 1.x (TYPO3 11)
 ===============
 
+-  Move backend module from Web to System group
+-  Refactor templates to use Fluid form ViewHelpers
 -  Initial release for TYPO3 11.5
 -  TCA schema extractor, relation resolver, Mermaid renderer
 -  CLI command and backend module
