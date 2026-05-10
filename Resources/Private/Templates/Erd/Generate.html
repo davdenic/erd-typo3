@@ -118,14 +118,5 @@
         <f:link.action action="index" class="btn btn-default">Back to form</f:link.action>
     </div>
 
-    <script>
-        document.getElementById('copy-mermaid-btn')?.addEventListener('click', function() {
-            var source = document.getElementById('mermaid-source').textContent;
-            navigator.clipboard.writeText(source).then(function() {
-                alert('Mermaid code copied to clipboard');
-            });
-        });
-    </script>
-
 </f:section>
 </html>
