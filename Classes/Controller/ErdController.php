@@ -11,6 +11,7 @@ use Denic\Erd\Domain\Service\TcaSchemaExtractor;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Http\Response;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 class ErdController extends ActionController
@@ -20,10 +21,12 @@ class ErdController extends ActionController
         protected readonly RelationResolver $relationResolver,
         protected readonly MermaidRenderer $mermaidRenderer,
         protected readonly ModuleTemplateFactory $moduleTemplateFactory,
+        protected readonly PageRenderer $pageRenderer,
     ) {}
 
     public function indexAction(): ResponseInterface
     {
+        $this->pageRenderer->addJsFooterFile('EXT:erd/Resources/Public/JavaScripts/ErdModule.js');
         $view = $this->moduleTemplateFactory->create($this->request);
         $this->assignFormData($view);
         return $view->renderResponse('Erd/Index');
@@ -47,6 +50,7 @@ class ErdController extends ActionController
             $markdown = $this->mermaidRenderer->renderMarkdown($tableSchemas, $config);
         }
 
+        $this->pageRenderer->addJsFooterFile('EXT:erd/Resources/Public/JavaScripts/ErdModule.js');
         $view = $this->moduleTemplateFactory->create($this->request);
         $this->assignFormData($view);
         $view->assignMultiple([
